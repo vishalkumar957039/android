@@ -1,0 +1,19 @@
+name: Minimal PoC PR Target
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+permissions: read-all
+
+jobs:
+  base-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm base repo execution
+        run: |
+          echo "This command is running in the BASE repository context!"
+          echo "Actor: $GITHUB_ACTOR"
+          echo "Repository: $GITHUB_REPOSITORY"
